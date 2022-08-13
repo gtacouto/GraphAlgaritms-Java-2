@@ -49,7 +49,35 @@ public class Graph {
         lowest = degreeI;
       }
     }
-    return highest;
+    return lowest;
+  }
+
+  public Graph complement() {
+    Graph aux = new Graph(this.adjMatrix.length);
+    for (int i = 0; i < this.adjMatrix.length; ++i) {
+      for (int j = 0; j < this.adjMatrix[i].length; ++j) {
+        if (this.adjMatrix[i][j] == 0 && i != j) {
+          aux.addEdge(i, j, 1);
+        }
+      }
+    }
+    return aux;
+  }
+
+  public boolean subgraph(Graph g2) {
+
+    if (g2.countEdges > this.countEdges || g2.countEdges > this.countNodes) {
+      return false;
+    }
+    for (int i = 0; i < g2.adjMatrix.length; ++i) {
+      for (int j = 0; j < g2.adjMatrix.length; ++j) {
+        if (g2.adjMatrix[i][j] != 0 && this.adjMatrix[i][j] == 0) {
+          return false;
+        }
+      }
+    }
+    return true;
+
   }
 
   public String toString() {
