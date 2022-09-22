@@ -5,7 +5,6 @@ public class Graph {
   private int countEdges;
   private int[][] adjMatrix;
 
-  
   public Graph(int numNodes) {
     this.countNodes = numNodes;
     this.countEdges = 0;
@@ -22,7 +21,7 @@ public class Graph {
     this.countEdges++;
     this.adjMatrix[source][sink] = weight;
   }
-  
+
   public void addEdgeUnoriented(int source, int sink, int weight) {
     if (source < 0 || source > this.adjMatrix.length - 1 ||
         sink < 0 || sink > this.adjMatrix.length - 1 ||
@@ -47,7 +46,7 @@ public class Graph {
     }
     return degree;
   }
-  
+
   public int lowestDegree() {
     int lowest = this.countNodes;
     for (int i = 0; i < this.adjMatrix.length; ++i) {
@@ -57,7 +56,7 @@ public class Graph {
     }
     return lowest;
   }
-  
+
   public int highestDegree() {
     int highest = 0;
     for (int i = 0; i < this.adjMatrix.length; ++i) {
@@ -105,7 +104,7 @@ public class Graph {
     }
     return R;
   }
-  
+
   public boolean oriented() {
     for (int i = 0; i < this.adjMatrix.length; ++i) {
       for (int j = 0; j < this.adjMatrix[i].length; ++j) {
@@ -115,7 +114,7 @@ public class Graph {
     }
     return false;
   }
-  
+
   public int notDescAdj(int u, int[] desc) {
     for (int v = 0; v < this.adjMatrix[u].length; ++v) {
       if (this.adjMatrix[u][v] != 0 && desc[v] == 0)
@@ -138,14 +137,13 @@ public class Graph {
         S.add(v);
         R.add(v);
         desc[v] = 1;
-      }
-      else {
+      } else {
         S.remove(S.size() - 1);
       }
     }
     return R;
   }
-  
+
   public boolean connected() {
     return this.bfs(0).size() == this.countNodes;
   }
@@ -166,7 +164,22 @@ public class Graph {
       }
     }
   }
-  
+
+  private static final int INF = 99999999;
+
+  public void dijkstra(int s) {
+
+    int[] dist = new int[this.countNodes];
+    int[] pred = new int[this.countNodes];
+    ArrayList<Integer> Q = new ArrayList<Integer>(this.countNodes);
+    for (int v = 0; v < this.countNodes; ++v) {
+      dist[v] = INF;
+      pred[v] = -1;
+      Q.add(v);
+    }
+    dist[s] = 0;
+  }
+
   public String toString() {
     String str = "";
     for (int i = 0; i < this.adjMatrix.length; ++i) {
