@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 
 public class Graph {
-
   private int countNodes;
   private int countEdges;
   private int[][] adjMatrix;
 
+  
   public Graph(int numNodes) {
     this.countNodes = numNodes;
     this.countEdges = 0;
@@ -22,7 +22,7 @@ public class Graph {
     this.countEdges++;
     this.adjMatrix[source][sink] = weight;
   }
-
+  
   public void addEdgeUnoriented(int source, int sink, int weight) {
     if (source < 0 || source > this.adjMatrix.length - 1 ||
         sink < 0 || sink > this.adjMatrix.length - 1 ||
@@ -47,17 +47,7 @@ public class Graph {
     }
     return degree;
   }
-
-  public int highestDegree() {
-    int highest = 0;
-    for (int i = 0; i < this.adjMatrix.length; ++i) {
-      int degreeI = degree(i);
-      if (degreeI > highest)
-        highest = degreeI;
-    }
-    return highest;
-  }
-
+  
   public int lowestDegree() {
     int lowest = this.countNodes;
     for (int i = 0; i < this.adjMatrix.length; ++i) {
@@ -66,6 +56,16 @@ public class Graph {
         lowest = degreeNodeI;
     }
     return lowest;
+  }
+  
+  public int highestDegree() {
+    int highest = 0;
+    for (int i = 0; i < this.adjMatrix.length; ++i) {
+      int degreeI = degree(i);
+      if (degreeI > highest)
+        highest = degreeI;
+    }
+    return highest;
   }
 
   public Graph complement() {
@@ -80,6 +80,10 @@ public class Graph {
     return g2;
   }
 
+  public float density() {
+    return (float) this.countEdges / (this.countNodes * (this.countNodes - 1));
+  }
+
   public ArrayList<Integer> bfs(int s) {
     int[] desc = new int[this.countNodes];
     ArrayList<Integer> Q = new ArrayList<>();
@@ -90,7 +94,7 @@ public class Graph {
     while (Q.size() > 0) {
       int u = Q.remove(0);
       for (int v = 0; v < this.adjMatrix[u].length; ++v) {
-        if (this.adjMatrix[u][v] != 0) {
+        if (this.adjMatrix[u][v] != 0) { // v é adjacente a u
           if (desc[v] == 0) {
             Q.add(v);
             R.add(v);
@@ -101,49 +105,7 @@ public class Graph {
     }
     return R;
   }
-
-  public ArrayList<Integer> buscaProfundidade(int s) {
-    int[] desc = new int[this.countNodes];
-    ArrayList<Integer> S = new ArrayList<>();
-    ArrayList<Integer> R = new ArrayList<>();
-
-    S.add(s);
-    R.add(s);
-    desc[s] = 1;
-
-    while (S.size() > 0) {
-      int u = S.get(S.size() - 1);
-      boolean in = false;
-      for (int v = 0; v < this.adjMatrix[u].length; ++v) {
-        if (this.adjMatrix[u][v] != 0) {
-          if (desc[v] == 0) {
-            S.add(v);
-            R.add(v);
-            desc[v] = 1;
-            in = true;
-            break;
-          }
-        }
-      }
-
-      if (in == false) {
-        S.remove(S.size() - 1);
-      }
-    }
-    return R;
-  }
-
-  public boolean connected() {
-    if (this.adjMatrix.length == this.bfs(0).size()) {
-      return true;
-    }
-    return false;
-  }
-
-  public float density() {
-    return (float) this.countEdges / (this.countNodes * (this.countNodes - 1));
-  }
-
+  
   public boolean oriented() {
     for (int i = 0; i < this.adjMatrix.length; ++i) {
       for (int j = 0; j < this.adjMatrix[i].length; ++j) {
@@ -153,7 +115,58 @@ public class Graph {
     }
     return false;
   }
+  
+  public int notDescAdj(int u, int[] desc) {
+    for (int v = 0; v < this.adjMatrix[u].length; ++v) {
+      if (this.adjMatrix[u][v] != 0 && desc[v] == 0)
+        return v;
+    }
+    return -1;
+  }
 
+  public ArrayList<Integer> dfs(int s) {
+    int[] desc = new int[this.countNodes];
+    ArrayList<Integer> S = new ArrayList<>();
+    S.add(s);
+    ArrayList<Integer> R = new ArrayList<>();
+    R.add(s);
+    desc[s] = 1;
+    while (S.size() > 0) {
+      int u = S.get(S.size() - 1);
+      int v = notDescAdj(u, desc);
+      if (v != -1) {
+        S.add(v);
+        R.add(v);
+        desc[v] = 1;
+      }
+      else {
+        S.remove(S.size() - 1);
+      }
+    }
+    return R;
+  }
+  
+  public boolean connected() {
+    return this.bfs(0).size() == this.countNodes;
+  }
+
+  public ArrayList<Integer> dfsRec(int s) {
+    int[] desc = new int[this.countNodes];
+    ArrayList<Integer> R = new ArrayList<>();
+    dfsRecAux(s, desc, R);
+    return R;
+  }
+
+  public void dfsRecAux(int u, int[] desc, ArrayList<Integer> R) {
+    desc[u] = 1;
+    R.add(u);
+    for (int v = 0; v < this.adjMatrix[u].length; ++v) {
+      if (this.adjMatrix[u][v] != 0 && desc[v] == 0) {
+        dfsRecAux(v, desc, R);
+      }
+    }
+  }
+  
   public String toString() {
     String str = "";
     for (int i = 0; i < this.adjMatrix.length; ++i) {
